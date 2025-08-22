@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "./Providers";
 import SessionGuard from "@/components/SessionGuard";
+import { HeroUIProvider } from "@heroui/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <SessionGuard>{children}</SessionGuard>
+          <SessionGuard>
+            <HeroUIProvider>{children}</HeroUIProvider>
+          </SessionGuard>
         </Providers>
       </body>
     </html>
