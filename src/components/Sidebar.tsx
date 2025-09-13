@@ -21,16 +21,16 @@ import {
 import {
   categorizedNavigationItems,
   categoryConfig,
-} from "@/data/navigationItems"; // Adjust path as needed
+} from "@/data/navigationItems";
+
+interface SidebarProps {
+  roles: string[];
+}
 
 interface NavigationItem {
   name: string;
   href: string;
   requiredRoles: string[];
-}
-
-interface CategorizedNavigationItems {
-  [key: string]: NavigationItem[];
 }
 
 interface MenuItem {
@@ -42,7 +42,6 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-// Icon mapping for navigation items
 const iconMap: { [key: string]: React.ReactNode } = {
   "/dashboard": <LayoutDashboard size={20} />,
   "/restaurant": <Store size={20} />,
@@ -56,14 +55,25 @@ const iconMap: { [key: string]: React.ReactNode } = {
   "/notifications": <Bell size={20} />,
 };
 
-// Category display names and whether they should be collapsible are now imported from navigation data
-
-export default function Sidebar() {
+export default function Sidebar({ roles }: SidebarProps) {
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     "main",
     "management",
   ]);
   const pathname = usePathname();
+
+  // Check if user has required roles
+  const hasRequiredRoles = (requiredRoles?: string[]): boolean => {
+    if (!requiredRoles || requiredRoles.length === 0) return true;
+
+    // Check if user has at least one of the required roles
+    return roles.some((role) => requiredRoles.includes(role));
+  };
+
+  // Filter navigation items based on user roles
+  const filterNavigationItems = (items: NavigationItem[]): NavigationItem[] => {
+    return items.filter((item) => hasRequiredRoles(item.requiredRoles));
+  };
 
   // Convert categorized navigation items to menu items format
   const convertToMenuItems = (): MenuItem[] => {
@@ -74,9 +84,14 @@ export default function Sidebar() {
         const config =
           categoryConfig[categoryKey as keyof typeof categoryConfig];
 
+        // Filter items based on user roles
+        const filteredItems = filterNavigationItems(items);
+
+        if (filteredItems.length === 0) return; // Skip empty categories
+
         if (!config.showHeader) {
           // For main section, add items directly without category header
-          items.forEach((item, index) => {
+          filteredItems.forEach((item, index) => {
             menuItems.push({
               id: item.href.replace("/", "") || `item-${index}`,
               label: item.name,
@@ -87,13 +102,15 @@ export default function Sidebar() {
           });
         } else {
           // For other sections, create category with children
-          const categoryItems: MenuItem[] = items.map((item, index) => ({
-            id: item.href.replace("/", "") || `item-${index}`,
-            label: item.name,
-            icon: iconMap[item.href] || <LayoutDashboard size={20} />,
-            href: item.href,
-            requiredRoles: item.requiredRoles,
-          }));
+          const categoryItems: MenuItem[] = filteredItems.map(
+            (item, index) => ({
+              id: item.href.replace("/", "") || `item-${index}`,
+              label: item.name,
+              icon: iconMap[item.href] || <LayoutDashboard size={20} />,
+              href: item.href,
+              requiredRoles: item.requiredRoles,
+            })
+          );
 
           if (config.collapsible) {
             menuItems.push({
@@ -128,12 +145,6 @@ export default function Sidebar() {
 
   const isActive = (href?: string) => {
     return href && pathname === href;
-  };
-
-  // Check if user has required roles (implement based on your auth system)
-  const hasRequiredRoles = (requiredRoles?: string[]) => {
-    // TODO: Implement role checking logic based on your authentication system
-    return true;
   };
 
   const renderMenuItem = (item: MenuItem, level = 0) => {
@@ -215,6 +226,20 @@ export default function Sidebar() {
   };
 
   const menuItems = convertToMenuItems();
+
+  // Don't render sidebar if no menu items are available
+  if (menuItems.length === 0) {
+    return (
+      <div className="w-64 h-screen bg-white border-r border-default-200 overflow-y-auto">
+        <div className="flex items-center gap-2 px-4 py-6 border-b border-default-200">
+          <span className="text-xl font-bold text-foreground">SOFFCRICKET</span>
+        </div>
+        <div className="p-4 text-center text-default-500">
+          No navigation items available for your role
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-64 h-screen bg-white border-r border-default-200 overflow-y-auto">

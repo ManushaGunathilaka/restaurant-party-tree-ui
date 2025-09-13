@@ -1,65 +1,65 @@
+// src/data/navigationItems.ts
 export const categorizedNavigationItems = {
   main: [
     {
       name: "Dashboard",
       href: "/dashboard",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["default-roles-gangfy-uat", "manager", "user"],
     },
   ],
   management: [
     {
       name: "Restaurant",
       href: "/restaurant",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["default-roles-gangfy-uat", "manager"],
     },
     {
       name: "Product Category",
       href: "/productcategory",
-      requiredRoles: ["default-roles-gangfy-uat", "CUSTOMER"],
+      requiredRoles: ["default-roles-gangfy-uat", "manager"],
     },
     {
       name: "Product",
       href: "/product",
-      requiredRoles: ["default-roles-gangfy-uat", "CUSTOMER"],
+      requiredRoles: ["admin", "manager", "staff"],
     },
     {
       name: "Customers",
       href: "/customers",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin", "manager"],
     },
   ],
   operations: [
     {
       name: "Orders",
       href: "/orders",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin", "manager", "staff", "user"],
     },
     {
       name: "Reports",
       href: "/reports",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin", "manager"],
     },
   ],
   settings: [
     {
       name: "Roles & Access",
       href: "/roles-access",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin"],
     },
     {
       name: "General Settings",
       href: "/settings",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin", "manager"],
     },
     {
       name: "Notifications",
       href: "/notifications",
-      requiredRoles: ["default-roles-gangfy-uat"],
+      requiredRoles: ["admin", "manager", "user"],
     },
   ],
 };
 
-// Category configuration
 export const categoryConfig = {
   main: { displayName: "", showHeader: false, collapsible: false },
   management: {
@@ -75,7 +75,6 @@ export const categoryConfig = {
   settings: { displayName: "SETTINGS", showHeader: true, collapsible: true },
 };
 
-// Legacy flat structure for backward compatibility
 export const navigationItems = [
   ...categorizedNavigationItems.main,
   ...categorizedNavigationItems.management,
