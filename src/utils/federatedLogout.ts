@@ -5,7 +5,10 @@ export default async function federatedLogout() {
     const response = await fetch("/api/auth/federated-logout");
     const data = await response.json();
     if (response.ok) {
-      await signOut({ redirect: false });
+      await signOut({
+        redirect: false,
+        callbackUrl: "/",
+      });
       window.location.href = data.url;
       return;
     }
@@ -13,7 +16,10 @@ export default async function federatedLogout() {
   } catch (error) {
     console.log(error);
     alert(error);
-    await signOut({ redirect: false });
-    window.location.href = "/";
+    await signOut({
+      redirect: false,
+      callbackUrl: "/",
+    });
+    window.location.href = "/api/auth/signin";
   }
 }
